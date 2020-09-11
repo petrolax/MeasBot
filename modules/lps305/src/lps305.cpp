@@ -1,8 +1,6 @@
 #include <cmath>
 #include <cstring>
 #include "lps305.h"
-#include <iostream>
-
 
 LPS305::LPS305() {
   tty = NULL;
@@ -13,7 +11,6 @@ LPS305::~LPS305() {
 }
 
 int LPS305::connect(char portName[] , int baud) {
-  char buff[256];
   tty = ttym_open(portName, baud);
   if(tty == NULL) {
     printf("No connect!\n");
@@ -21,13 +18,12 @@ int LPS305::connect(char portName[] , int baud) {
   }
   ttym_timeout(tty, 1000);
   
-  setOutput(0);
+  setOutput(1);
   setVoltage(1, 0);
   setVoltage(2, 0);
   setCurrent(1, 0);
   setCurrent(2, 0);
   
-  ttym_read(tty,buff,200);
   return 1;
 }
   
@@ -37,9 +33,10 @@ void LPS305::setVoltage(int channel, double volt) {
     return;
   }
   char buff[256];
-  sprintf(buff, "VSET%d %f\n", channel, volt);
+  sprintf(buff, "VSET%i %.3f\r\n", channel, volt);
+  std::cout << buff << std::endl;
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
 }
 
 void LPS305::setCurrent(int channel, double curr) {
@@ -48,9 +45,9 @@ void LPS305::setCurrent(int channel, double curr) {
     return;
   }
   char buff[256];
-  sprintf(buff, "ISET%d %f\n", channel, curr);
+  sprintf(buff, "ISET%i %f\r\n", channel, curr);
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
 }
 
 void LPS305::setOutput(int mode) {
@@ -59,9 +56,10 @@ void LPS305::setOutput(int mode) {
     return;
   }
   char buff[256];
-  sprintf(buff, "OUT%d\n", mode);
+  sprintf(buff, "OUT%i\r\n", mode);
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  //ttym_read(tty,buff,200);
+  sprintf(buff, getstr().c_str());
 }
 
 void LPS305::setModeTracking(int mode) {
@@ -70,9 +68,9 @@ void LPS305::setModeTracking(int mode) {
     return;
   }
   char buff[256];
-  sprintf(buff, "TRACK%d\n", mode);
+  sprintf(buff, "TRACK%i\n", mode);
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
 }
 
 void LPS305::setBeeper(int mode) {
@@ -81,9 +79,9 @@ void LPS305::setBeeper(int mode) {
     return;
   }
   char buff[256];
-  sprintf(buff, "BEEP%d\n", mode);
+  sprintf(buff, "BEEP%i\n", mode);
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
 } 
 
 void LPS305::setDigOutput(int mode) {
@@ -92,9 +90,9 @@ void LPS305::setDigOutput(int mode) {
     return;
   }
   char buff[256];
-  sprintf(buff, "VDD%d\n", mode);
+  sprintf(buff, "VDD%i\n", mode);
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
 }
 
 void LPS305::setCompensatedOutput(int mode) {
@@ -103,9 +101,9 @@ void LPS305::setCompensatedOutput(int mode) {
     return;
   }
   char buff[256];
-  sprintf(buff, "LOWA%d\n", mode);
+  sprintf(buff, "LOWA%i\n", mode);
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
 }
   
 double LPS305::getVoltage(int channel) {
@@ -115,9 +113,9 @@ double LPS305::getVoltage(int channel) {
   }
   double res;
   char buff[256];
-  sprintf(buff, "VOUT%d\n", channel);
-  ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, "VOUT%i\r\n", channel);
+  ttym_write(tty, buff, 6);
+  sprintf(buff, getstr().c_str());
 
   res = atof(buff);
   return res;
@@ -130,9 +128,9 @@ double LPS305::getCurrent(int channel) {
   }
   double res;
   char buff[256];
-  sprintf(buff, "IOUT%d\n", channel);
+  sprintf(buff, "IOUT%i\n", channel);
   ttym_write(tty, buff, strlen(buff));
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
   
   res = atof(buff);
   return res;
@@ -142,7 +140,7 @@ int LPS305::getStatus() {
   int res;
   char buff[256];
   ttym_write(tty, (void*)"STATUS\n", 7);
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
   
   res = atoi(buff);
   return res;
@@ -151,21 +149,22 @@ int LPS305::getStatus() {
 char* LPS305::getModel() {
   char *buff = (char*)malloc(sizeof(char)*256);
   ttym_write(tty, (void*)"MODEL\n", 6);
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
   return buff;
 }
 
 char* LPS305::getVersion() {
   char *buff = (char*)malloc(sizeof(char)*256);
   ttym_write(tty, (void*)"VERSION\n", 8);
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
+
   return buff;
 }
 
 char* LPS305::getHelp() {
   char *buff = (char*)malloc(sizeof(char)*256);
   ttym_write(tty, (void*)"HELP\n", 5);
-  ttym_read(tty, buff, 255);
+  sprintf(buff, getstr().c_str());
   return buff;
 }
 
@@ -176,4 +175,41 @@ void LPS305::close() {
   }
 }
 
-
+std::string LPS305::getstr() {
+  std::string res_str("", 256);
+  size_t sz = 0;
+  char data;
+  while(1) {
+    data = ttym_readchar(tty);
+    if(sz >= res_str.size()) {
+      std::cout << std::endl;
+      std::cout << "out of range" << std::endl;
+      return res_str;
+    }
+    if(data == ' ') continue;
+    sz++;
+    std::cout << data;
+    if(data <= 0 && res_str.size() > 0){ //timeout
+      std::cout << std::endl;
+      return res_str;
+    } else if(data <= 0 && res_str.size() <= 0) {
+      std::cout << std::endl;
+      return "";
+    }
+    if(data == 'O') {
+      res_str[sz] = data;
+      data = ttym_readchar(tty);
+      sz++;
+      if(data == 'K') {
+        res_str[sz] = data;
+        data = ttym_readchar(tty);
+        sz++;
+        if(data == '\n')
+          break;
+      }
+    }
+    res_str[sz] = data;
+  }
+  std::cout << std::endl;
+  return res_str;
+}

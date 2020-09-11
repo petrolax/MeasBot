@@ -2,10 +2,12 @@
 #define __LPS305_H__
 
 #include "ttym.h"
+#include <iostream>
 
 class LPS305 {
 private:
   ttym_t tty;
+  std::string getstr();
 public:
   LPS305();
   ~LPS305();

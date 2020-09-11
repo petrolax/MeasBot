@@ -64,7 +64,7 @@ void SR570::setSens(float sens_A_V){
     1e-3,
     FP_NAN
   };
-  
+
   int sens_num = findCeilInArr(sens, sens_A_V);
   if(sens_num < 0){
     ERROR_LOG("Wrong sens");
@@ -72,7 +72,7 @@ void SR570::setSens(float sens_A_V){
   }
   char buff[256];
 
-  sprintf(buff, "SENS%d;\n", sens_num);
+  sprintf(buff, "SENS%i;\n", sens_num);
   ttym_write(tty, buff, 8);
   ttym_read(tty, buff, 255);
 }
@@ -165,7 +165,7 @@ void SR570::setLowFilter(float freqFilter){
   }
   
   char buff[256];
-  sprintf(buff, "%s%d;\n", "LFRQ", freqFilter);
+  sprintf(buff, "LFRQ%d;\n", freq_num);
   
   ttym_write(tty, buff, strlen(buff));
 }

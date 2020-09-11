@@ -146,6 +146,8 @@ static int L_negSetVoltage(lua_State *L) {
     fprintf(stderr, "Call 'connectNewDevice' before using anything functions");
     return -1;
   }
+
+  if(volt < 0) volt *= (-1);
   lps->setVoltage(2, volt);
   
   return 0;
@@ -169,7 +171,7 @@ static int L_negGetVoltage(lua_State *L) {
     return -1;
   }
   double res;
-  res = lps->getVoltage(2);
+  res = lps->getVoltage(2)*(-1);
   
   lua_pushnumber(L, res);
   return 1;

@@ -25,7 +25,7 @@ static int L_help(lua_State *L){
                     "  setInOffsetCurrSign(sign):nil - sets the input offset current sign. 0 = neg, 1 = pos\n"
                     "  setInOffsetCalMode(calmode):nil - sets the input offset cal mode. 0 = cal, 1 = uncal\n"
                     "  turnBiasVolt(value):nil - turn the bias voltage on (value=1) or off(value=0)\n"
-                    "  setSigInvertSense(mode):nil - sets the signal invert sense. 0=non- inverted, 1=inverted\n"
+                    "  setSigInvertSense(mode):nil - sets the signal invert sense. 0=non-inverted, 1=inverted\n"
                     "  setBlanksOutAmplifier(mode):nil - blanks the front-end output of the amplifier. 0=no blank, 1=blank\n"
                     "  setUncalSensVernier(nscale):nil - sets the uncalibrated sensitivity vernier. [0 ≤ nscale ≤ 100] (percent of full scale)\n"
                     "  setBiasVoltLVL(nLevel):nil - sets the bias voltage level in the range. [-5000 ≤ nLevel ≤ +5000] (-5.000V to +5.000 V)\n"
